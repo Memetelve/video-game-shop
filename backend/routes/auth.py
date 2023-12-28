@@ -1,5 +1,6 @@
+from typing import Annotated
 from uuid import uuid4
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 
 from models.users import UserRegistration, UserLogin
 from helpers import (
@@ -111,4 +112,25 @@ async def register_user(user: UserRegistration):
             "msg": "User created successfully",
             "token": acces_token,
             "token_validity_time": time,
+        }
+
+
+@auth.get("/logout")
+async def logout_user(token: Annotated[str, Header("Authorization")]):
+    async with driver.session() as session:
+        result = await session.run(
+            "MATCH (t:Token {token: $token}) DETACH DELETE t",
+            token=token,
+        )
+
+        result = await result.values()
+
+        if result == []:
+            raise HTTPException(
+                400,
+                detail="Invalid token",
+            )
+
+        return {
+            "msg": "User logged out successfully",
         }
