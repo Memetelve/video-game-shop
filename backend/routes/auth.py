@@ -1,6 +1,6 @@
-from typing import Annotated
 from uuid import uuid4
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from models.users import UserRegistration, UserLogin
 from helpers import (
@@ -12,11 +12,20 @@ from helpers import (
     create_access_token_with_time,
 )
 
+bearer_scheme = HTTPBearer()
+
+
+def get_bearer_token(
+    authorization: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+):
+    return authorization.credentials
+
+
 auth = APIRouter(prefix="/auth", tags=["auth"])
 driver = get_driver()
 
 
-@auth.get("/login")
+@auth.post("/login")
 async def login_user(login: UserLogin):
     if is_email_valid(login.username):
         email = login.username
@@ -115,21 +124,17 @@ async def register_user(user: UserRegistration):
         }
 
 
-@auth.get("/logout")
-async def logout_user(token: Annotated[str, Header("Authorization")]):
+@auth.post("/logout")
+async def logout_user(token: str = Depends(get_bearer_token)):
+    print(token)
+
     async with driver.session() as session:
-        result = await session.run(
-            "MATCH (t:Token {token: $token}) DETACH DELETE t",
+        await session.run(
+            "MATCH (t:Token) WHERE t.token = $token DETACH DELETE t",
             token=token,
         )
 
-        result = await result.values()
-
-        if result == []:
-            raise HTTPException(
-                400,
-                detail="Invalid token",
-            )
+        # We do not really care if the token was real. If it was not, it will not be deleted. User will still be logged out.
 
         return {
             "msg": "User logged out successfully",
