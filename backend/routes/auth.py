@@ -1,5 +1,5 @@
 from uuid import uuid4
-from fastapi import APIRouter, HTTPException, Header, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from models.users import UserRegistration, UserLogin
