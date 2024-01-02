@@ -93,3 +93,20 @@ def create_access_token_with_time(expires_delta: str = None):
     token = binascii.hexlify(os.urandom(50)).decode()
 
     return token, expire
+
+
+def is_accepted_by_filter(item, filters):
+    if not filters:
+        return False
+    if not filters.authors or item["authors"] in filters.authors:
+        return False
+    if not filters.languages or item["languages"] in filters.languages:
+        return False
+    if not filters.tags or item["tags"] in filters.tags:
+        return False
+    if not filters.price_gte or item["price"] < filters.price_gte:
+        return False
+    if not filters.price_lte or item["price"] > filters.price_lte:
+        return False
+
+    return True
