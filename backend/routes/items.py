@@ -46,8 +46,8 @@ async def get_items():
 
 
 @items.get("/items/{item_id}")
-async def get_item(item_id: str):
-    cypher_query = f"MATCH (i:Item) WHERE i.id = '{item_id}' RETURN i"
+async def get_item(item_id: int):
+    cypher_query = f"MATCH (i:Item) WHERE i.id = {item_id} RETURN i"
     async with driver.session() as session:
         result = await session.run(cypher_query)
         result = await result.values()
@@ -79,6 +79,8 @@ async def search_items(query: str, filters: GameTagFilter = None):
     result_items = []
     for item in result:
         item = item[0]
+
+        print(item)
 
         if not is_accepted_by_filter(item, filters):
             continue
