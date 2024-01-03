@@ -97,16 +97,17 @@ def create_access_token_with_time(expires_delta: str = None):
 
 def is_accepted_by_filter(item, filters):
     if not filters:
+        return True
+
+    if getattr(filters, "authors") and item["authors"] not in filters.authors:
         return False
-    if not filters.authors or item["authors"] in filters.authors:
+    if getattr(filters, "languages") and item["languages"] not in filters.languages:
         return False
-    if not filters.languages or item["languages"] in filters.languages:
+    if getattr(filters, "tags") and item["tags"] not in filters.tags:
         return False
-    if not filters.tags or item["tags"] in filters.tags:
+    if getattr(filters, "price_gte") and item["price"] < filters.price_gte:
         return False
-    if not filters.price_gte or item["price"] < filters.price_gte:
-        return False
-    if not filters.price_lte or item["price"] > filters.price_lte:
+    if getattr(filters, "price_lte") and item["price"] > filters.price_lte:
         return False
 
     return True
