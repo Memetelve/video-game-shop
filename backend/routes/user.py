@@ -1,13 +1,22 @@
 from fastapi import APIRouter, Depends
 
+from models.users import PaymentCard, UserUpdate
 from helpers import get_driver, get_bearer_token
-from models.users import PaymentCard
 
 user = APIRouter(prefix="/api/v1/user", tags=["user"])
 driver = get_driver()
 
 
-@user.get("/{user_id}")
+def create_update_user_query(data):
+    for key in list(data.keys()):
+        if data[key] is None:
+            del data[key]
+
+    set_clause = ", ".join(f"u.{key} = '{value}'" for key, value in data.items())
+    return f"SET {set_clause}"
+
+
+@user.get("/id/{user_id}")
 async def get_user(user_id: str):
     cypher_query = f"MATCH (u:User) WHERE u.id = '{user_id}' RETURN u"
     async with driver.session() as session:
@@ -83,14 +92,16 @@ DELETE r
             card_number=card.card_number,
         )
 
+        return {"msg": "Card deleted successfully"}
+
 
 @user.get("/get-cards")
 async def get_cards(token: str = Depends(get_bearer_token)):
     cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
+        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u"
     )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
+        result = await session.run(cypher_query, token=token)
         result = await result.values()
 
         if result == []:
@@ -101,14 +112,38 @@ MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[:HAS_CARD]->(c:Card) WHERE t.token
 RETURN c
 """
 
-    result = await session.run(
-        cypher_query,
-        token=token,
-    )
+        result = await session.run(
+            cypher_query,
+            token=token,
+        )
 
-    result = await result.values()
-    cards = []
-    for card in result:
-        cards.append(card[0])
+        result = await result.values()
+        cards = []
+        for card in result:
+            cards.append(card[0])
 
     return {"msg": "Cards fetched successfully", "cards": cards}
+
+
+@user.patch("/update")
+async def update_user(user: UserUpdate, token: str = Depends(get_bearer_token)):
+    cypher_query = (
+        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u"
+    )
+    async with driver.session() as session:
+        result = await session.run(cypher_query, token=token)
+        result = await result.values()
+
+        if result == []:
+            return {"msg": "User does not exist"}
+
+        set_statement = create_update_user_query(user.model_dump())
+
+        query = (
+            "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token "
+            + set_statement
+        )
+
+        await session.run(query, token=token)
+
+    return {"msg": "User updated successfully"}
