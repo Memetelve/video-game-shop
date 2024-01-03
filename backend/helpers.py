@@ -5,6 +5,8 @@ import binascii
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 from neo4j import AsyncGraphDatabase
+from fastapi import Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 time_symbols = {
     "s": 1,
@@ -111,3 +113,12 @@ def is_accepted_by_filter(item, filters):
         return False
 
     return True
+
+
+bearer_scheme = HTTPBearer()
+
+
+def get_bearer_token(
+    authorization: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+):
+    return authorization.credentials

@@ -1,6 +1,5 @@
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from models.users import UserRegistration, UserLogin
 from helpers import (
@@ -10,15 +9,8 @@ from helpers import (
     is_email_valid,
     is_password_valid,
     create_access_token_with_time,
+    get_bearer_token,
 )
-
-bearer_scheme = HTTPBearer()
-
-
-def get_bearer_token(
-    authorization: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-):
-    return authorization.credentials
 
 
 auth = APIRouter(prefix="/auth", tags=["auth"])
