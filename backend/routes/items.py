@@ -17,26 +17,22 @@ driver = get_driver()
 
 @items.get("/")
 async def get_items():
-    cypher_query = "MATCH (u:User)-[r:BOUGHT]->(i:Item) RETURN i, count(r) as Relations ORDER BY Relations DESC LIMIT 20"
+    cypher_query = """
+MATCH (u:User)-[r:BOUGHT]->(i:Item)
+RETURN i, count(r) as Relations
+ORDER BY Relations DESC
+LIMIT 20
+UNION
+MATCH (i:Item) WHERE NOT EXISTS { MATCH (c)-[:BOUGHT]->(i) RETURN true }
+RETURN i, 0 as Relations
+LIMIT 20
+"""
     async with driver.session() as session:
         result = await session.run(cypher_query)
         result = await result.values()
 
-        if len(result) < 20:
-            print("less than 20")
-
-            new_limit = 20 - len(result)
-            helper_query = (
-                "MATCH (i:Item) WHERE NOT EXISTS { MATCH (c)-[:BOUGHT]->(i) RETURN true } RETURN i LIMIT %s"
-                % (new_limit)
-            )
-
-            helper_result = await session.run(helper_query)
-            helper_result = await helper_result.values()
-            result += helper_result
-
         items = []
-        for item in result:
+        for item in result[:20]:
             item = item[0]
             items.append(
                 {
