@@ -99,6 +99,10 @@ def create_access_token_with_time(expires_delta: str = None):
     return token, expire
 
 
+def create_transaction_id():
+    return binascii.hexlify(os.urandom(20)).decode()
+
+
 def item_tags_to_enum(tags):
     return [TagEnum(tag.lower()) for tag in tags]
 
