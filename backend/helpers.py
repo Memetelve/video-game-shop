@@ -8,6 +8,8 @@ from neo4j import AsyncGraphDatabase
 from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+from models.filters import TagEnum
+
 time_symbols = {
     "s": 1,
     "m": 60,
@@ -97,6 +99,10 @@ def create_access_token_with_time(expires_delta: str = None):
     return token, expire
 
 
+def item_tags_to_enum(tags):
+    return [TagEnum(tag.lower()) for tag in tags]
+
+
 def is_accepted_by_filter(item, filters):
     if not filters:
         return True
@@ -105,7 +111,11 @@ def is_accepted_by_filter(item, filters):
         return False
     if getattr(filters, "languages") and item["languages"] not in filters.languages:
         return False
-    if getattr(filters, "tags") and item["tags"] not in filters.tags:
+    if getattr(filters, "tags") and any(
+        tag not in item_tags_to_enum(item["tags"]) for tag in filters.tags
+    ):
+        print(item_tags_to_enum(item["tags"]))
+        print(filters.tags)
         return False
     if getattr(filters, "price_gte") and item["price"] < filters.price_gte:
         return False
