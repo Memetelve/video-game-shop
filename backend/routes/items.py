@@ -208,7 +208,7 @@ async def add_comment(
 async def add_purchase(
     item: Item,
     card: PaymentCard,
-    coupon: Coupon,
+    coupon: Coupon = None,
     token: str = Depends(get_bearer_token),
 ):
     cypher_query = (
@@ -218,14 +218,42 @@ async def add_purchase(
         result = await session.run(cypher_query)
         result = await result.values()
 
-        card_last_four = card.card_number[-4:]
-        transaction_id = create_transaction_id()
-
         if result == []:
             return {"msg": "User does not exist"}
 
-        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $id CREATE (u)-[:BOUGHT {}]->(i)"
+        cypher_query = "MATCH (c:Coupon) WHERE c.code = $coupon_code MATCH (i:Item) WHERE i.id = $item_id RETURN c, i"
 
-        await session.run(cypher_query, token=token, id=item.id)
+        if coupon is None:
+            coupon_code = ""
+        else:
+            coupon_code = coupon.code
+
+        result = await session.run(
+            cypher_query, coupon_code=coupon_code, item_id=item.id
+        )
+        result = await result.values()
+
+        if result == []:
+            return {"msg": "Coupon does not exist"}
+
+        coupon = result[0][0]
+        game = result[0][1]
+        discount = coupon["discount"]
+        final_price = max(game["price"] - discount, 0.00)
+
+        card_last_four = card.card_number[-4:]
+        transaction_id = create_transaction_id()
+
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $item_id CREATE (u)-[:BOUGHT {card: $card, transaction_id: $transaction_id, price: $price, datetime: $datetime}]->(i)"
+
+        result = await session.run(
+            cypher_query,
+            token=token,
+            item_id=item.id,
+            card=card_last_four,
+            transaction_id=transaction_id,
+            price=final_price,
+            datetime=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        )
 
     return {"msg": "Purchase added successfully"}

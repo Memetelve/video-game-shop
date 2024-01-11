@@ -11,4 +11,4 @@ class Comment(BaseModel):
 
 
 class Coupon(BaseModel):
-    code: str
+    code: str = None
