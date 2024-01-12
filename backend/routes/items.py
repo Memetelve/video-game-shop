@@ -11,7 +11,7 @@ from helpers import (
     create_transaction_id,
 )
 
-items = APIRouter(prefix="/api/v1/items", tags=["items", "games"])
+items = APIRouter(prefix="/api/v1/items", tags=["items"])
 driver = get_driver()
 
 
