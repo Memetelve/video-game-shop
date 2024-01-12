@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import binascii
 
 from datetime import datetime, timedelta, timezone
@@ -20,12 +21,19 @@ time_symbols = {
     "y": 31556952,
 }
 
+with open("backend/config.json", "r") as config_file:
+    config = json.load(config_file)
+
 
 def get_driver():
     # TODO: Add this to config file
-    return AsyncGraphDatabase.driver(
-        "bolt://localhost:7687", auth=("neo4j", "mmmmmmmm")
-    )
+
+    ip = config["neo4j"]["ip"]
+    port = config["neo4j"]["port"]
+    username = config["neo4j"]["username"]
+    password = config["neo4j"]["password"]
+
+    return AsyncGraphDatabase.driver(f"bolt://{ip}:{port}", auth=(username, password))
 
 
 def time_symbol_to_seconds(time):
