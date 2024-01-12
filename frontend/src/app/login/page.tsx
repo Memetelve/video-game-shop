@@ -1,11 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 
 import { LoginForm } from "../../components/LoginForm";
+import { useAppContext } from "@/components/Context";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+    const context = useAppContext();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (context.sessionToken) {
+            router.push("/");
+        } else {
+            router.push("/login");
+        }
+    }, [context.sessionToken, router]);
+
     return (
         <div className="grid h-screen place-items-center bg-neutral-900">
             <div className="bg-neutral-700 rounded-t-md">

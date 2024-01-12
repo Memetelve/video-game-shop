@@ -1,10 +1,13 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { redirect, useRouter } from "next/navigation";
 
 import constants from "../../config.json";
 
 export function LoginForm() {
+    const router = useRouter();
+
     const validationSchema = Yup.object({
         email: Yup.string()
             .email("Invalid email format")
@@ -25,18 +28,28 @@ export function LoginForm() {
         },
         validationSchema,
         onSubmit: (values) => {
-            formik.resetForm();
+            // formik.resetForm();
+
+            const newValues = {
+                username: values.email,
+                password: values.password,
+            };
 
             fetch(`${constants.API_DOMAIN}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(values),
+                body: JSON.stringify(newValues),
             })
                 .then((res) => res.json())
                 .then((res) => {
                     console.log(res);
+
+                    const sessionToken = res.token;
+                    localStorage.setItem("sessionToken", sessionToken);
+
+                    router.push("/");
                 })
                 .catch((err) => {
                     console.error(err);
