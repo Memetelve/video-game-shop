@@ -2,10 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.cdnfonts.com/css/motiva-sans');
+
 .item-card img {
     transition: transform 0.3s ease-in-out;
 }
 
 .item-card:hover img {
     transform: scale(1.05);
+}
+
+.logo-font {
+    font-family: 'Motiva Sans', sans-serif;
 }

@@ -32,7 +32,10 @@ export default function Login() {
                         layout="responsive"
                     />
                 </div>
-                <div className="mt-12 px-8 pb-4">
+                <h1 className="text-4xl text-white text-center font-bold mt-8 logo-font">
+                    Sign In
+                </h1>
+                <div className="mt-8 px-8 pb-4">
                     <LoginForm />
                 </div>
             </div>

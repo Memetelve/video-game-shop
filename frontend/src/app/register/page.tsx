@@ -30,6 +30,9 @@ export default function Login() {
                         layout="responsive"
                     />
                 </div>
+                <h1 className="text-4xl text-white text-center font-bold mt-8 logo-font">
+                    Sign Up
+                </h1>
                 <div className="mt-12 px-8 pb-4">
                     <RegisterForm />
                 </div>
