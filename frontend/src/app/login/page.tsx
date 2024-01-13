@@ -2,10 +2,11 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { LoginForm } from "../../components/LoginForm";
 import { useAppContext } from "@/components/Context";
-import { useRouter } from "next/navigation";
+import constants from "@/../config.json";
 
 export default function Login() {
     const context = useAppContext();
