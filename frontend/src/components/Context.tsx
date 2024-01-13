@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import constants from "../../config.json";
 
 enum Currency {
     USD = "USD",
@@ -20,7 +21,12 @@ const defaultContext = {
     setSessionToken: (token: string) => {},
     currency: Currency.USD,
     setCurrency: (currency: Currency) => {},
-    user: {},
+    user: {
+        id: 0,
+        username: "",
+        email: "",
+        role: "",
+    },
     setUser: (user: User) => {},
 };
 
@@ -47,6 +53,28 @@ export default function ContextProvider({
     useEffect(() => {
         const sessionToken = localStorage.getItem("sessionToken") || "";
         setSessionToken(sessionToken);
+        const currency = localStorage.getItem("currency") || Currency.USD;
+        setCurrency(currency as Currency);
+
+        if (!sessionToken) {
+            return;
+        }
+
+        fetch(`${constants.API_DOMAIN}/auth/me`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${sessionToken}`,
+            },
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                setUser({
+                    id: res.id,
+                    username: res.username,
+                    email: res.email,
+                    role: res.role,
+                });
+            });
     }, []);
 
     return (

@@ -3,11 +3,13 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAppContext } from "@/components/Context";
 
 import constants from "../../config.json";
 
 export function LoginForm() {
     const router = useRouter();
+    const context = useAppContext();
 
     const validationSchema = Yup.object({
         email: Yup.string()
@@ -45,10 +47,29 @@ export function LoginForm() {
             })
                 .then((res) => res.json())
                 .then((res) => {
-                    console.log(res);
-
                     const sessionToken = res.token;
                     localStorage.setItem("sessionToken", sessionToken);
+
+                    fetch(`${constants.API_DOMAIN}/auth/me`, {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${sessionToken}`,
+                        },
+                    })
+                        .then((res) => res.json())
+                        .then((res) => {
+                            context.setUser({
+                                id: res.user.id,
+                                username: res.user.username,
+                                email: res.user.email,
+                                role: res.user.role,
+                            });
+
+                            router.push("/");
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                        });
 
                     router.push("/");
                 })

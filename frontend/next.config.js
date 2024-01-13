@@ -2,7 +2,7 @@
 const nextConfig = {
     reactStrictMode: true,
     images: {
-        domains: ['discordapp.com', 'cdn.discordapp.com', 'cdn.discord.com', 'cdn.discord.com'],
+        domains: ['discordapp.com', 'cdn.discordapp.com', 'cdn.discord.com', "dicebear.com", "api.dicebear.com"],
     },
     env: {
         API_URL: process.env.API_URL,
