@@ -53,11 +53,11 @@ LIMIT 20
         return {"msg": "Items fetched successfully", "items": items}
 
 
-@items.get("by_id/{item_id}")
+@items.get("/id/{item_id}")
 async def get_item(item_id: int):
-    cypher_query = f"MATCH (i:Item) WHERE i.id = {item_id} RETURN i"
+    cypher_query = "MATCH (i:Item) WHERE i.id = $item_id RETURN i"
     async with driver.session() as session:
-        result = await session.run(cypher_query)
+        result = await session.run(cypher_query, item_id=item_id)
         result = await result.values()
 
         if result == []:
