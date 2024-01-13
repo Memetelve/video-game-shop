@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.item-card img {
+    transition: transform 0.3s ease-in-out;
+}
+
+.item-card:hover img {
+    transform: scale(1.05);
+}
