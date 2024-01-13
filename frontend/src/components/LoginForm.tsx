@@ -59,10 +59,10 @@ export function LoginForm() {
                         .then((res) => res.json())
                         .then((res) => {
                             context.setUser({
-                                id: res.user.id,
-                                username: res.user.username,
-                                email: res.user.email,
-                                role: res.user.role,
+                                id: res.id,
+                                username: res.username,
+                                email: res.email,
+                                role: res.role,
                             });
 
                             router.push("/");

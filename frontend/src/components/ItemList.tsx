@@ -16,12 +16,10 @@ export default function ItemList() {
     }, []);
 
     return (
-        <div className="container mx-auto p-20">
-            <div className="flex flex-wrap -mx-4">
-                {Object.keys(items).map((key) => {
-                    return <ItemCard key={key} item={items[key]} />;
-                })}
-            </div>
+        <div className="flex flex-wrap -mx-4">
+            {Object.keys(items).map((key) => {
+                return <ItemCard key={key} item={items[key]} />;
+            })}
         </div>
     );
 }

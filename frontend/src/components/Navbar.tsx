@@ -1,6 +1,8 @@
 import React from "react";
 import Image from "next/image";
 import { useAppContext } from "@/components/Context";
+import { useRouter, usePathname } from "next/navigation";
+import constants from "../../config.json";
 
 import {
     Dropdown,
@@ -12,12 +14,31 @@ import {
 
 export default function Navbar() {
     const context = useAppContext();
+    const router = useRouter();
+    const pathname = usePathname();
 
     const myUsernames = ["Memetelve", "Telve", "Telvet"];
+
+    const logout = () => {
+        localStorage.removeItem("sessionToken");
+        context.setSessionToken("");
+        context.setUser({
+            id: 0,
+            username: "",
+            email: "",
+            role: "",
+        });
+
+        router.push("/login");
+    };
 
     const userAvatar = myUsernames.includes(context.user.username)
         ? "https://cdn.discordapp.com/avatars/288717325765443587/d5999bdcd8bcc8455a11fd1f43e34e95.gif?size=64"
         : `https://api.dicebear.com/7.x/pixel-art/png?seed=${context.user.username}`;
+
+    if (!context.user.id) {
+        return <></>;
+    }
 
     return (
         <nav className="bg-neutral-700 p-4 ">
@@ -53,7 +74,7 @@ export default function Navbar() {
                     <Dropdown>
                         <DropdownTrigger>
                             <button className="ml-auto mr-0 flex-row ">
-                                <div className="bg-blue-600 rounded-sm text-slate-100 py-2 pr-3 flex flex-row items-center">
+                                <div className="bg-sky-400 rounded-lg text-slate-100 py-2 pr-3 flex flex-row items-center">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="h-5 w-5 inline-block ml-1"
@@ -80,24 +101,42 @@ export default function Navbar() {
                         <DropdownMenu
                             aria-label="Static Actions"
                             className="bg-slate-800 text-white rounded-lg p-2"
+                            onAction={(item) => {
+                                if (item === "logout") {
+                                    logout();
+
+                                    fetch(
+                                        `${constants.API_DOMAIN}/auth/logout`,
+                                        {
+                                            method: "POST",
+                                            headers: {
+                                                Authorization: `Bearer ${context.sessionToken}`,
+                                            },
+                                        }
+                                    )
+                                        .then((res) => res.json())
+                                        .then((res) => {
+                                            console.log(res);
+                                        });
+                                }
+                            }}
                         >
                             <DropdownItem
-                                key="new"
-                                className="ppx-2 hover:bg-slate-600 rounded-md mr-12 text-lg mb-2"
+                                key="setting"
+                                className="px-2 hover:bg-slate-600 rounded-md mr-12 text-lg mb-2"
                             >
                                 Settings
                             </DropdownItem>
                             <DropdownItem
-                                key="new"
-                                className="px-2 hover:bg-slate-600 mr-12 text-lg"
-                                color="danger"
+                                key="logout"
+                                className="px-2 hover:bg-slate-600 rounded-md mr-12 text-lg text-red-600"
                             >
                                 Logout
                             </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
                 ) : (
-                    <div className="flex flex-row"></div>
+                    <div className="ml-auto mr-0 flex-row "></div>
                 )}
             </div>
         </nav>
