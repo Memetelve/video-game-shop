@@ -2,6 +2,7 @@ import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { redirect, useRouter } from "next/navigation";
+import Link from "next/link";
 
 import constants from "../../config.json";
 
@@ -113,7 +114,7 @@ export function LoginForm() {
                     Login
                 </button>
                 <div className="mt-4 text-sm text-gray-400">
-                    New? Register here
+                    <Link href="/register">New? Register here</Link>
                 </div>
             </div>
         </form>
