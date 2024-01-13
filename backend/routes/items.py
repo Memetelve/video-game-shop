@@ -19,12 +19,14 @@ driver = get_driver()
 async def get_items():
     cypher_query = """
 MATCH (u:User)-[r:BOUGHT]->(i:Item)
-RETURN i, count(r) as Relations
-ORDER BY Relations DESC
+OPTIONAL MATCH (u)-[c:COMMENTED_ABOUT]->(i)
+RETURN i, count(r) as purchases, count(c) as reviews, avg(c.stars) as average_rating
+ORDER BY purchases DESC
 LIMIT 20
 UNION
 MATCH (i:Item) WHERE NOT EXISTS { MATCH (c)-[:BOUGHT]->(i) RETURN true }
-RETURN i, 0 as Relations
+OPTIONAL MATCH (u)-[c:COMMENTED_ABOUT]->(i)
+RETURN i, 0 as purchases, count(c) as reviews, avg(c.stars) as average_rating
 LIMIT 20
 """
     async with driver.session() as session:
@@ -41,6 +43,9 @@ LIMIT 20
                     "price": item["price"],
                     "description": item["description"],
                     "image": item["image"],
+                    "purchases": item["purchases"],
+                    "reviews": item["reviews"],
+                    "average_rating": item["average_rating"],
                 }
             )
 
