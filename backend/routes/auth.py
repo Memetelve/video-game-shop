@@ -116,6 +116,32 @@ async def register_user(user: UserRegistration):
         }
 
 
+@auth.get("/me")
+async def get_user(token: str = Depends(get_bearer_token)):
+    cypher_query = (
+        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
+    )
+
+    async with driver.session() as session:
+        result = await session.run(cypher_query)
+        result = await result.values()
+
+        if result == []:
+            raise HTTPException(
+                400,
+                detail="User does not exist",
+            )
+
+        user = result[0][0]
+
+        return {
+            "username": user["username"],
+            "email": user["email"],
+            "id": user["id"],
+            "role": "user",
+        }
+
+
 @auth.post("/logout")
 async def logout_user(token: str = Depends(get_bearer_token)):
     print(token)
