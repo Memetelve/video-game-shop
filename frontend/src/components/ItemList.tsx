@@ -2,6 +2,7 @@ import react, { useState, useEffect } from "react";
 
 import ItemCard from "./ItemCard";
 import constants from "@/../config.json";
+import Link from "next/link";
 
 export default function ItemList() {
     const [items, setItems] = useState<{ [key: string]: any }>({});

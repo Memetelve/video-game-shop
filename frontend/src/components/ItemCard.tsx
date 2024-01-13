@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import StarRating from "./StarRating";
 interface Item {
@@ -20,8 +21,8 @@ export default function ItemCard({ item }: { item: Item }) {
 
     return (
         <div className="w-full sm:w-1/2 md:w-1/2 xl:w-1/4 p-4">
-            <a
-                href=""
+            <Link
+                href={`/game/${item.id}`}
                 className="item-card block bg-white shadow-md hover:shadow-xl rounded-lg overflow-hidden"
             >
                 <div className="relative pb-48 overflow-hidden">
@@ -45,7 +46,7 @@ export default function ItemCard({ item }: { item: Item }) {
                     rating={item.average_rating}
                     numReviews={item.reviews}
                 />
-            </a>
+            </Link>
         </div>
     );
 }

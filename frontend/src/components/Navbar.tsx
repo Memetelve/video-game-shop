@@ -74,7 +74,7 @@ export default function Navbar() {
                     <Dropdown>
                         <DropdownTrigger>
                             <button className="ml-auto mr-0 flex-row ">
-                                <div className="bg-sky-400 rounded-lg text-slate-100 py-2 pr-3 flex flex-row items-center">
+                                <div className="bg-sky-950 rounded-lg text-slate-100 py-2 pr-3 flex flex-row items-center">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="h-5 w-5 inline-block ml-1"
@@ -103,6 +103,9 @@ export default function Navbar() {
                             className="bg-slate-800 text-white rounded-lg p-2"
                             onAction={(item) => {
                                 if (item === "logout") {
+                                    const token =
+                                        localStorage.getItem("sessionToken");
+
                                     logout();
 
                                     fetch(
@@ -110,7 +113,7 @@ export default function Navbar() {
                                         {
                                             method: "POST",
                                             headers: {
-                                                Authorization: `Bearer ${context.sessionToken}`,
+                                                Authorization: `Bearer ${token}`,
                                             },
                                         }
                                     )
