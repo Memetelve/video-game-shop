@@ -210,6 +210,29 @@ async def add_comment(
     return {"msg": "Comment added successfully"}
 
 
+@items.get("/comments/{item_id}")
+async def get_comments(item_id: int):
+    cypher_query = "MATCH (i:Item) WHERE i.id = $item_id MATCH (u)-[c:COMMENTED_ABOUT]->(i) RETURN c, u"
+    async with driver.session() as session:
+        result = await session.run(cypher_query, item_id=item_id)
+        result = await result.values()
+
+        comments = []
+        for comment in result:
+            user = comment[1]
+            comment = comment[0]
+            comments.append(
+                {
+                    "username": user["username"],
+                    "text": comment["text"],
+                    "stars": comment["stars"],
+                    "datetime": comment["datetime"],
+                }
+            )
+
+        return {"msg": "Comments fetched successfully", "comments": comments}
+
+
 @items.post("/add-purchase")
 async def add_purchase(
     item: Item,
