@@ -34,8 +34,9 @@ LIMIT 20
         result = await result.values()
 
         items = []
-        for item in result[:20]:
-            item = item[0]
+        for item_full in result[:20]:
+            item = item_full[0]
+
             items.append(
                 {
                     "id": item["id"],
@@ -43,9 +44,9 @@ LIMIT 20
                     "price": item["price"],
                     "description": item["description"],
                     "image": item["image"],
-                    "purchases": item["purchases"],
-                    "reviews": item["reviews"],
-                    "average_rating": item["average_rating"],
+                    "purchases": item_full[1],
+                    "reviews": item_full[2],
+                    "average_rating": item_full[3],
                 }
             )
 
