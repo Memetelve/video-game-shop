@@ -57,7 +57,9 @@ export default function PurchaseGame() {
                     expiration_date: values.expirationDate,
                     cvv: values.cvv,
                 },
-                coupon: values.coupon,
+                coupon: {
+                    code: values.coupon,
+                },
             };
 
             console.log(body);
