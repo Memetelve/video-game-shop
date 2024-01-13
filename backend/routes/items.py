@@ -250,7 +250,12 @@ async def add_purchase(
         if result == []:
             return {"msg": "User does not exist"}
 
-        cypher_query = "MATCH (c:Coupon) WHERE c.code = $coupon_code MATCH (i:Item) WHERE i.id = $item_id RETURN c, i"
+        cypher_query = "MATCH (i:Item) WHERE i.id = $item_id RETURN i"
+        result = await session.run(cypher_query, item_id=item.id)
+        result = await result.values()
+        game = result[0][0]
+
+        cypher_query = "MATCH (c:Coupon) WHERE c.code = $coupon_code RETURN c"
 
         if coupon is None:
             coupon_code = ""
@@ -263,10 +268,10 @@ async def add_purchase(
         result = await result.values()
 
         if result == []:
-            return {"msg": "Coupon does not exist"}
+            coupon = {"discount": 0.00}
+        else:
+            coupon = result[0][0]
 
-        coupon = result[0][0]
-        game = result[0][1]
         discount = coupon["discount"]
         final_price = max(game["price"] - discount, 0.00)
 
