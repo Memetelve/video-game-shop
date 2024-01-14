@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useAppContext } from "@/components/Context";
 import { useRouter, usePathname } from "next/navigation";
 import constants from "../../config.json";
+import Link from "next/link";
 
 import {
     Dropdown,
@@ -51,24 +52,24 @@ export default function Navbar() {
                     height={60}
                 />
                 <div className="flex-row">
-                    <a
+                    <Link
                         href="/"
                         className="text-neutral-100 hover:text-neutral-300 font-semibold px-4 py-2 rounded-md"
                     >
                         Home
-                    </a>
-                    <a
-                        href="/"
+                    </Link>
+                    <Link
+                        href="/library"
                         className="text-neutral-100 hover:text-neutral-300 font-semibold px-4 py-2 rounded-md"
                     >
                         Library
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                         href="/"
                         className="text-neutral-100 hover:text-neutral-300 font-semibold px-4 py-2 rounded-md"
                     >
                         Contact
-                    </a>
+                    </Link>
                 </div>
                 {context.user.id ? (
                     <Dropdown>
