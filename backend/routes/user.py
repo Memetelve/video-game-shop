@@ -201,3 +201,44 @@ async def get_transactions(token: str = Depends(get_bearer_token)):
         transactions.sort(key=lambda x: x["datetime"], reverse=True)
 
     return {"msg": "Transactions fetched successfully", "transactions": transactions}
+
+
+@user.get("/notifications")
+async def get_notifications(token: str = Depends(get_bearer_token)):
+    cypher_query = (
+        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u"
+    )
+    async with driver.session() as session:
+        result = await session.run(cypher_query, token=token)
+        result = await result.values()
+
+        if result == []:
+            return {"msg": "User does not exist"}
+
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[r:BOUGHT]->(i:Item) WHERE t.token = $token AND r.returned = false RETURN r, i"
+
+        result = await session.run(cypher_query, token=token)
+        result = await result.values()
+        notifications = []
+
+        for transaction in result:
+            notifications.append(
+                {
+                    "text": f"You just bought {transaction[1]['name']} for {transaction[0]['price']:.2f}$",
+                    "datetime": transaction[0]["datetime"],
+                }
+            )
+
+            if transaction[0]["returned"]:
+                notifications.append(
+                    {
+                        "text": f"You just returned {transaction[1]['name']:.2f}",
+                        "datetime": transaction[0]["return_datetime"],
+                    }
+                )
+
+        # sort transactions by datetime
+
+        notifications.sort(key=lambda x: x["datetime"], reverse=True)
+
+    return {"msg": "Notifications fetched successfully", "notifications": notifications}
