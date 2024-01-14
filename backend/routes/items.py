@@ -278,7 +278,7 @@ async def add_purchase(
         card_last_four = card.card_number[-4:]
         transaction_id = create_transaction_id()
 
-        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $item_id CREATE (u)-[:BOUGHT {card: $card, transaction_id: $transaction_id, price: $price, datetime: $datetime}]->(i)"
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $item_id CREATE (u)-[:BOUGHT {card: $card, transaction_id: $transaction_id, price: $price, datetime: $datetime, returned: False}]->(i)"
 
         result = await session.run(
             cypher_query,
@@ -291,3 +291,36 @@ async def add_purchase(
         )
 
     return {"msg": "Purchase added successfully"}
+
+
+@items.get("/owned")
+async def get_owned_items(token: str = Depends(get_bearer_token)):
+    cypher_query = (
+        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
+    )
+    async with driver.session() as session:
+        result = await session.run(cypher_query)
+        result = await result.values()
+
+        if result == []:
+            return {"msg": "User does not exist"}
+
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:BOUGHT {returned: False}]->(i:Item) RETURN i, r"
+
+        result = await session.run(cypher_query, token=token)
+        result = await result.values()
+
+        items = []
+        for item in result:
+            game = item[0]
+            items.append(
+                {
+                    "id": game["id"],
+                    "name": game["name"],
+                    "price": game["price"],
+                    "description": game["description"],
+                    "image": game["image"],
+                }
+            )
+
+        return {"msg": "Owned items fetched successfully", "items": items}
