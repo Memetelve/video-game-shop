@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import constants from "../../config.json";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ItemDisplay({ itemId }: { itemId: number }) {
     const [item, setItem] = useState({
@@ -45,9 +46,12 @@ export default function ItemDisplay({ itemId }: { itemId: number }) {
                 </p>
                 <p className="text-slate-200 mb-4">{item.description}</p>
                 <div className="flex items-center">
-                    <button className="bg-sky-800 text-white px-6 py-3 rounded-lg font-bold hover:bg-sky-600 mt-6">
+                    <Link
+                        href={`/game/${itemId}/purchase`}
+                        className="bg-sky-800 text-white px-6 py-3 rounded-lg font-bold hover:bg-sky-600 mt-6"
+                    >
                         Get this game
-                    </button>
+                    </Link>
                 </div>
             </div>
         </div>

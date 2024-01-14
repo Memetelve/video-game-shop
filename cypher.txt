@@ -1,0 +1,44 @@
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "League of Legens", description: "League of Legends (LoL), commonly referred to AS League, is a 2009 multiplayer online battle arena video game developed AND published by Riot Games. Inspired by Defense of the Ancients, a custom map for Warcraft III, Riot's founders sought to develop a stand-alone game IN the same genre. Since its release IN October 2009, League has been free-to-play AND is monetized through purchasable character customization. The game is available for Microsoft Windows AND macOS. ", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1195448880834293980/hV1Awfj.jpeg?ex=65b40787&is=65a19287&hm=29ab55063d4317cecf786d0945c8ebc36cc0effede79d0c7fdd478bbc95742fc&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "Dota", description: "Dota is the deepest multi-player action RTS game ever made AND there's always a new strategy OR tactic to discover. It's completely free to play AND always will be - start defending your ancient now.", price: 0.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196046115536117800/F30yX1g.jpg?ex=65b633bf&is=65a3bebf&hm=e77213ad50dd4e8df0827a660af1a42cd2e3a8bbf042e3c0d0fde85da4b05155&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "World of tanks", description: "World of Tanks is an armoured warfare-themed multiplayer online game developed by Wargaming, featuring 20th century era combat vehicles", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196047916570255471/psbKzNg.jpg?ex=65b6356c&is=65a3c06c&hm=e8ee40908e843d82b8c8435837502b720c57abeb79db64748d1355aa6ded6269&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "World of warships", description: "World of Warships is a free-to-play naval warfare-themed massively multiplayer online game produced AND published by Wargaming, following the earlier games World of Tanks AND World of Warplanes. ", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196048092517105746/VsJvi0e.png?ex=65b63596&is=65a3c096&hm=0e6d5614c2c1ea151bbcd1fc5996ee53c42cd020fb0c17a7e8ed3896e803a5ec&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "World of warplanes", description: "World of Warplanes is a free-to-play aerial combat massively multiplayer online (MMO) game developed by Persha Studia AND published by Wargaming.net. The game was originally released IN November 2013 IN CIS countries, North America AND Europe. ", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196048241008062544/WdzrZp8.jpg?ex=65b635ba&is=65a3c0ba&hm=028c80e72de228aa506f693571d3d793e917f6d11a13d5fe73aba252e3af29fe&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "World of warcraft", description: "World of Warcraft (WoW) is a massively multiplayer online role-playing game (MMORPG) released IN 2004 by Blizzard Entertainment. It is the fourth released game SET IN the Warcraft fantasy universe. World of Warcraft takes place WITHIN the Warcraft world of Azeroth, approximately four years after the events at the conclusion of Blizzard's previous Warcraft release, Warcraft III: The Frozen Throne. ", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196048421245689967/TQvL7Kb.jpg?ex=65b635e5&is=65a3c0e5&hm=5566c6b6e1328901fdb2b20bf9f842b2ae32b98fcb5a7d90d1428f6700c1f45c&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "Hearthstone", description: "Hearthstone is a free-to-play online digital collectible card game developed AND published by Blizzard Entertainment. Originally subtitled Heroes of Warcraft, Hearthstone builds upon the existing lore of the Warcraft series by using the same elements, characters, AND relics. It was first released for Microsoft Windows AND macOS IN March 2014", price: 0.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196048542381395988/r3yp91l.jpg?ex=65b63602&is=65a3c102&hm=b1989d76bcd21f6b1fb982b938276c5f1746d7f100528f19aea70c7242d76734&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "Heroes of the storm", description: "Heroes of the Storm (HotS) is a multiplayer online battle arena video game developed AND published by Blizzard Entertainment for Microsoft Windows AND macOS that was released on June 2, 2015. The game features heroes from Blizzard's franchises including Warcraft, Diablo, StarCraft, The Lost Vikings, AND Overwatch. The game uses both free-to-play AND freemium models AND is supported by micropayments, which can be used to purchase heroes, visual alterations for the heroes IN the game, AND mounts. ", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196048890546356224/rmi2ByT.jpg?ex=65b63655&is=65a3c155&hm=1fde2521ff0b8ec4ed99a5ccec58efcda20460e57657d3638d9af86cccb91c1c&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "Diablo", description: "Diablo is an action role-playing hack AND slash video game developed BY Blizzard North AND released BY Blizzard Entertainment on December 31, 1996. SET IN the fictional Kingdom of Khanduras, located IN the mortal realm, Diablo has the player take control of a lone hero battling to rid the world of Diablo, the Lord of Terror. Beneath the town of Tristram, the player journeys through sixteen dungeon levels, ultimately entering Hell itself IN order to face Diablo. ", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196049094997717012/oE5Q7Ea.png?ex=65b63685&is=65a3c185&hm=ede568b6e43f9ab98c37f7f8940550cd89acbf1d1895fcec5c925a9bba3d65b7&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "Starcraft", description: "StarCraft is a military science fiction media franchise created BY Chris Metzen AND James Phinney AND owned BY Blizzard Entertainment. The series, SET IN the beginning of the 26th century, centers on a galactic struggle for dominance among four species—the adaptable AND mobile Terrans, the ever-evolving insectoid Zerg, the powerfully enigmatic Protoss, AND the godlike Xel'Naga creator race— IN a distant part of the Milky Way galaxy known AS the Koprulu Sector. ", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196049266901274695/kmt9mo4.jpg?ex=65b636ae&is=65a3c1ae&hm=70f092a777057f5c48903ae848cf676c3c5ee3010d19d6cc18bfc7886f4e1826&", id: new_id})
+
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (:Item {name: "Overwatch", description: "Overwatch is a team-based multiplayer first-person shooter developed AND published by Blizzard Entertainment AND released on May 24, 2016, for PlayStation 4, Xbox One, AND Windows. Described AS a hero shooter, Overwatch assigns players into two teams of six, with each player selecting from a roster of over 30 characters, known AS heroes, each with a unique style of play that is divided into three general roles that fit their purpose.", price: 10.0, image: "https://cdn.discordapp.com/attachments/1195448866514931783/1196050021053907045/ZFmqBST.jpg?ex=65b63762&is=65a3c262&hm=a6fea3a0bbd99137b6d2e02849e998b2869599e60343f959c58c400c79b8f407&", id: new_id})
+
