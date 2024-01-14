@@ -285,7 +285,7 @@ async def add_purchase(
         card_last_four = card.card_number[-4:]
         transaction_id = create_transaction_id()
 
-        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $item_id (u)-[:BOUGHT {card: $card, transaction_id: $transaction_id, price: $price, datetime: $datetime, returned: False}]->(i)"
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $item_id CREATE (u)-[:BOUGHT {card: $card, transaction_id: $transaction_id, price: $price, datetime: $datetime, returned: False}]->(i)"
 
         result = await session.run(
             cypher_query,
