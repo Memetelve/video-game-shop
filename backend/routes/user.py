@@ -148,3 +148,48 @@ async def update_user(user: UserUpdate, token: str = Depends(get_bearer_token)):
         await session.run(query, token=token)
 
     return {"msg": "User updated successfully"}
+
+
+@user.get("/transactions")
+async def get_transactions(token: str = Depends(get_bearer_token)):
+    cypher_query = (
+        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u"
+    )
+    async with driver.session() as session:
+        result = await session.run(cypher_query, token=token)
+        result = await result.values()
+
+        if result == []:
+            return {"msg": "User does not exist"}
+
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[r:BOUGHT]->() WHERE t.token = $token RETURN r"
+
+        result = await session.run(cypher_query, token=token)
+        result = await result.values()
+        transactions = []
+
+        for transaction in result:
+            transactions.append(
+                {
+                    "id": transaction[0]["transaction_id"],
+                    "price": transaction[0]["price"],
+                    "datetime": transaction[0]["datetime"],
+                    "card": "**** **** **** " + transaction[0]["card"],
+                    "returned": transaction[0]["returned"],
+                    "type": "bought",
+                }
+            )
+
+            if transaction[0]["returned"]:
+                transactions.append(
+                    {
+                        "id": transaction[0]["transaction_id"],
+                        "price": transaction[0]["price"],
+                        "datetime": transaction[0]["return_datetime"],
+                        "card": "**** **** **** " + transaction[0]["card"],
+                        "returned": True,
+                        "type": "returned",
+                    }
+                )
+
+    return {"msg": "Transactions fetched successfully", "transactions": transactions}

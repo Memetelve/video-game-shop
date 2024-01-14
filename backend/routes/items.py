@@ -2,7 +2,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends
 
 from models.users import PaymentCard
-from models.items import Item, Comment, Coupon
+from models.items import Item, Comment, Coupon, Transaction
 from models.filters import GameTagFilter
 from helpers import (
     get_driver,
@@ -250,6 +250,13 @@ async def add_purchase(
         if result == []:
             return {"msg": "User does not exist"}
 
+        # check if game bought already
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:BOUGHT]->(i:Item) WHERE i.id = $item_id RETURN r"
+        result = await session.run(cypher_query, token=token, item_id=item.id)
+        result = await result.values()
+        if result != []:
+            return {"msg": "Item already bought"}
+
         cypher_query = "MATCH (i:Item) WHERE i.id = $item_id RETURN i"
         result = await session.run(cypher_query, item_id=item.id)
         result = await result.values()
@@ -278,7 +285,7 @@ async def add_purchase(
         card_last_four = card.card_number[-4:]
         transaction_id = create_transaction_id()
 
-        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $item_id CREATE (u)-[:BOUGHT {card: $card, transaction_id: $transaction_id, price: $price, datetime: $datetime, returned: False}]->(i)"
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $item_id (u)-[:BOUGHT {card: $card, transaction_id: $transaction_id, price: $price, datetime: $datetime, returned: False}]->(i)"
 
         result = await session.run(
             cypher_query,
@@ -324,3 +331,27 @@ async def get_owned_items(token: str = Depends(get_bearer_token)):
             )
 
         return {"msg": "Owned items fetched successfully", "items": items}
+
+
+@items.get("/refund")
+async def refund_item(transaction: Transaction, token: str = Depends(get_bearer_token)):
+    cypher_query = (
+        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
+    )
+    async with driver.session() as session:
+        result = await session.run(cypher_query)
+        result = await result.values()
+
+        if result == []:
+            return {"msg": "User does not exist"}
+
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:BOUGHT {transaction_id: $transaction_id}]->(i:Item) SET r.returned = True, r.return_datetime = $datetime"
+
+        result = await session.run(
+            cypher_query,
+            token=token,
+            transaction_id=transaction.transaction_id,
+            datetime=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        )
+
+        return {"msg": "Item refunded successfully"}

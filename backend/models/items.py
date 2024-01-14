@@ -13,3 +13,7 @@ class Comment(BaseModel):
 
 class Coupon(BaseModel):
     code: Optional[str] = None
+
+
+class Transaction(BaseModel):
+    transaction_id: str
