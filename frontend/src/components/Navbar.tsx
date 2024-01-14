@@ -132,6 +132,12 @@ export default function Navbar() {
                                 Settings
                             </DropdownItem>
                             <DropdownItem
+                                key="setting"
+                                className="px-2 hover:bg-slate-600 rounded-md mr-12 text-lg mb-2"
+                            >
+                                <Link href="/transactions">Transactions</Link>
+                            </DropdownItem>
+                            <DropdownItem
                                 key="logout"
                                 className="px-2 hover:bg-slate-600 rounded-md mr-12 text-lg text-red-600"
                             >
