@@ -162,7 +162,7 @@ async def get_transactions(token: str = Depends(get_bearer_token)):
         if result == []:
             return {"msg": "User does not exist"}
 
-        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[r:BOUGHT]->() WHERE t.token = $token RETURN r"
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[r:BOUGHT]->(i:Item) WHERE t.token = $token RETURN r, i"
 
         result = await session.run(cypher_query, token=token)
         result = await result.values()
@@ -177,6 +177,8 @@ async def get_transactions(token: str = Depends(get_bearer_token)):
                     "card": "**** **** **** " + transaction[0]["card"],
                     "returned": transaction[0]["returned"],
                     "type": "bought",
+                    "itemName": transaction[1]["name"],
+                    "itemImage": transaction[1]["image"],
                 }
             )
 
@@ -189,6 +191,8 @@ async def get_transactions(token: str = Depends(get_bearer_token)):
                         "card": "**** **** **** " + transaction[0]["card"],
                         "returned": True,
                         "type": "returned",
+                        "itemName": transaction[1]["name"],
+                        "itemImage": transaction[1]["image"],
                     }
                 )
 
