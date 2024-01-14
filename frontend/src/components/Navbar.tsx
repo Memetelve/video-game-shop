@@ -129,7 +129,7 @@ export default function Navbar() {
                                 key="setting"
                                 className="px-2 hover:bg-slate-600 rounded-md mr-12 text-lg mb-2"
                             >
-                                Settings
+                                <Link href="/settings">Settings</Link>
                             </DropdownItem>
                             <DropdownItem
                                 key="setting"
