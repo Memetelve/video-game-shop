@@ -333,7 +333,7 @@ async def get_owned_items(token: str = Depends(get_bearer_token)):
         return {"msg": "Owned items fetched successfully", "items": items}
 
 
-@items.get("/refund")
+@items.post("/refund")
 async def refund_item(transaction: Transaction, token: str = Depends(get_bearer_token)):
     cypher_query = (
         f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
