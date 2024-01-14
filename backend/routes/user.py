@@ -192,4 +192,8 @@ async def get_transactions(token: str = Depends(get_bearer_token)):
                     }
                 )
 
+        # sort transactions by datetime
+
+        transactions.sort(key=lambda x: x["datetime"], reverse=True)
+
     return {"msg": "Transactions fetched successfully", "transactions": transactions}
