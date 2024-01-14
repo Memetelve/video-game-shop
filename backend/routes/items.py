@@ -251,7 +251,7 @@ async def add_purchase(
             return {"msg": "User does not exist"}
 
         # check if game bought already
-        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:BOUGHT]->(i:Item) WHERE i.id = $item_id RETURN r"
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:BOUGHT {returned: false}]->(i:Item) WHERE i.id = $item_id RETURN r"
         result = await session.run(cypher_query, token=token, item_id=item.id)
         result = await result.values()
         if result != []:
