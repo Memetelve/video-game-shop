@@ -215,7 +215,7 @@ async def get_notifications(token: str = Depends(get_bearer_token)):
         if result == []:
             return {"msg": "User does not exist"}
 
-        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[r:BOUGHT]->(i:Item) WHERE t.token = $token AND r.returned = false RETURN r, i"
+        cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[r:BOUGHT]->(i:Item) WHERE t.token = $token RETURN r, i"
 
         result = await session.run(cypher_query, token=token)
         result = await result.values()
@@ -232,7 +232,7 @@ async def get_notifications(token: str = Depends(get_bearer_token)):
             if transaction[0]["returned"]:
                 notifications.append(
                     {
-                        "text": f"You just returned {transaction[1]['name']:.2f}",
+                        "text": f"You just returned {transaction[1]['name']}",
                         "datetime": transaction[0]["return_datetime"],
                     }
                 )
