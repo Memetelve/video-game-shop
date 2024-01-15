@@ -4,6 +4,10 @@ import { useAppContext } from "@/components/Context";
 import { useRouter, usePathname } from "next/navigation";
 import constants from "../../config.json";
 import Link from "next/link";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
+import MailIcon from "@mui/icons-material/Mail";
+import Notifications from "./Notifications";
 
 import {
     Dropdown,
@@ -71,10 +75,11 @@ export default function Navbar() {
                         Contact
                     </Link>
                 </div>
-                {context.user.id ? (
+                <div className="ml-auto">
+                    <Notifications />
                     <Dropdown>
                         <DropdownTrigger>
-                            <button className="ml-auto mr-0 flex-row ">
+                            <button className="flex-row ml-6">
                                 <div className="bg-sky-950 rounded-lg text-slate-100 py-2 pr-3 flex flex-row items-center">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -145,9 +150,7 @@ export default function Navbar() {
                             </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
-                ) : (
-                    <div className="ml-auto mr-0 flex-row "></div>
-                )}
+                </div>
             </div>
         </nav>
     );
