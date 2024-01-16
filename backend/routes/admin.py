@@ -78,3 +78,62 @@ async def post_database_file(
             # return
 
         return {"detail": "Great success"}
+
+
+@admin.post("/items/add")
+async def post_item(
+    name: str,
+    description: str,
+    price: float,
+    image_url: str,
+    token: str = Depends(get_bearer_token),
+):
+    cypher_query = f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' AND u.role = 'admin' RETURN u"
+    async with driver.session() as session:
+        result = await session.run(cypher_query)
+        result = await result.values()
+
+        if result == []:
+            return {"detail": "You are not admin"}
+
+        cypher_query = """
+MATCH (i:Item)
+WITH COUNT(i) + 1 AS new_id
+CREATE (i:Item {name: $name, description: $description, price: $price, image: $image_url, id: new_id})
+        """
+
+        await session.run(
+            cypher_query,
+            name=name,
+            description=description,
+            price=price,
+            image_url=image_url,
+        )
+
+        return {"detail": "Great success"}
+
+
+@admin.delete("/items/delete")
+async def delete_item(
+    id: int,
+    token: str = Depends(get_bearer_token),
+):
+    cypher_query = f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' AND u.role = 'admin' RETURN u"
+    async with driver.session() as session:
+        result = await session.run(cypher_query)
+        result = await result.values()
+
+        if result == []:
+            return {"detail": "You are not admin"}
+
+        cypher_query = """
+MATCH (i:Item {id: $id})
+DETACH DELETE i
+        """
+
+        await session.run(
+            cypher_query,
+            id=id,
+        )
+
+        return {"detail": "Great success"}
