@@ -29,7 +29,7 @@ export default function RootLayout({
             router.push("/");
         } else if (localStorage.getItem("sessionToken")) {
             return;
-        } else {
+        } else if (pathname !== "/register") {
             router.push("/login");
         }
     }, [router, pathname]);
