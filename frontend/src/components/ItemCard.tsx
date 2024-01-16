@@ -50,7 +50,6 @@ export default function ItemCard({ item }: { item: Item }) {
                                 )
                             )}
                         </span>
-                        &nbsp;
                     </div>
                 </div>
                 <StarRating
