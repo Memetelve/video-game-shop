@@ -12,14 +12,6 @@ export default function Login() {
     const context = useAppContext();
     const router = useRouter();
 
-    useEffect(() => {
-        if (context.sessionToken) {
-            router.push("/");
-        } else {
-            router.push("/login");
-        }
-    }, [context.sessionToken, router]);
-
     return (
         <div className="grid h-screen place-items-center bg-neutral-900">
             <div className="bg-neutral-700 rounded-t-md">

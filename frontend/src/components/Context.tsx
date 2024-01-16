@@ -19,8 +19,6 @@ interface User {
 const defaultContext = {
     sessionToken: "",
     setSessionToken: (token: string) => {},
-    currency: Currency.USD,
-    setCurrency: (currency: Currency) => {},
     user: {
         id: 0,
         username: "",
@@ -42,7 +40,6 @@ export default function ContextProvider({
     children: React.ReactNode;
 }) {
     const [sessionToken, setSessionToken] = useState("");
-    const [currency, setCurrency] = useState(Currency.USD);
     const [user, setUser] = useState<User>({
         id: 0,
         username: "",
@@ -53,8 +50,6 @@ export default function ContextProvider({
     useEffect(() => {
         const sessionToken = localStorage.getItem("sessionToken") || "";
         setSessionToken(sessionToken);
-        const currency = localStorage.getItem("currency") || Currency.USD;
-        setCurrency(currency as Currency);
 
         if (!sessionToken) {
             return;
@@ -63,6 +58,7 @@ export default function ContextProvider({
         fetch(`${constants.API_DOMAIN}/auth/me`, {
             method: "GET",
             headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${sessionToken}`,
             },
         })
@@ -82,8 +78,6 @@ export default function ContextProvider({
             value={{
                 sessionToken: sessionToken || "",
                 setSessionToken: setSessionToken,
-                currency: currency,
-                setCurrency: setCurrency,
                 user: user,
                 setUser: setUser,
             }}

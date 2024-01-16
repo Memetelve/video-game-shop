@@ -75,7 +75,7 @@ export default function PurchaseGame() {
                 .then((res) => res.json())
                 .then((res) => {
                     console.log(res);
-                    router.push("/");
+                    router.push("/library");
                 });
         },
     });

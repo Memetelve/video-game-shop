@@ -45,7 +45,14 @@ export function LoginForm() {
                 },
                 body: JSON.stringify(newValues),
             })
-                .then((res) => res.json())
+                .then((res) => {
+                    if (!res.ok) {
+                        return res.json().then((err) => {
+                            throw new Error(err.detail);
+                        });
+                    }
+                    return res.json();
+                })
                 .then((res) => {
                     const sessionToken = res.token;
                     localStorage.setItem("sessionToken", sessionToken);
@@ -53,10 +60,18 @@ export function LoginForm() {
                     fetch(`${constants.API_DOMAIN}/auth/me`, {
                         method: "GET",
                         headers: {
+                            "Content-Type": "application/json",
                             Authorization: `Bearer ${sessionToken}`,
                         },
                     })
-                        .then((res) => res.json())
+                        .then((res) => {
+                            if (!res.ok) {
+                                return res.json().then((err) => {
+                                    throw new Error(err.detail);
+                                });
+                            }
+                            return res.json();
+                        })
                         .then((res) => {
                             context.setUser({
                                 id: res.id,
@@ -70,8 +85,6 @@ export function LoginForm() {
                         .catch((err) => {
                             console.error(err);
                         });
-
-                    router.push("/");
                 })
                 .catch((err) => {
                     console.error(err);

@@ -13,7 +13,7 @@ export default function Login() {
     const router = useRouter();
 
     useEffect(() => {
-        if (context.sessionToken) {
+        if (localStorage.getItem("sessionToken")) {
             router.push("/");
         }
     }, [context.sessionToken, router]);
