@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from routes.auth import auth
 from routes.user import user
 from routes.items import items
+from routes.admin import admin
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -21,6 +22,7 @@ app.add_middleware(
 app.include_router(auth)
 app.include_router(user)
 app.include_router(items)
+app.include_router(admin)
 
 if __name__ == "__main__":
     import uvicorn

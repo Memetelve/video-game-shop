@@ -100,7 +100,7 @@ async def register_user(user: UserRegistration):
         acces_token, time = create_access_token_with_time()
 
         await session.run(
-            "CREATE (u:User {username: $username, email: $email, password: $password, id: $id}) CREATE (t:Token {token: $token, time: $time}) CREATE (u)-[:USES_TOKEN]->(t)",
+            "CREATE (u:User {username: $username, email: $email, password: $password, id: $id, role: 'user'}) CREATE (t:Token {token: $token, time: $time}) CREATE (u)-[:USES_TOKEN]->(t)",
             username=user.username,
             email=user.email,
             password=password_hash,
