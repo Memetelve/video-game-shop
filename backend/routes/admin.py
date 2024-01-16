@@ -1,8 +1,8 @@
-import json
-
+from datetime import datetime
 from fastapi import APIRouter, Depends, UploadFile
 
 from helpers import get_driver, get_bearer_token
+from models.items import Item, Comment, Coupon, Transaction
 
 admin = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 driver = get_driver()
@@ -25,7 +25,13 @@ async def get_database_file(token: str = Depends(get_bearer_token)):
         result = await session.run(cypher_query)
         result = await result.data()
 
-        return {"detail": "Great success", "data": result[0]["data"]}
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+        return {
+            "detail": "Great success",
+            "data": result[0]["data"],
+            "filename": f"db-snapshop-{timestamp}.txt",
+        }
 
 
 @admin.post("/database-file")
@@ -38,14 +44,14 @@ async def post_database_file(
         result = await session.run(cypher_query)
         result = await result.values()
 
-        # if result == []:
-        #     return {"detail": "You are not admin"}
+        await session.run("MATCH (n) DETACH DELETE n")
+
+        if result == []:
+            return {"detail": "You are not admin"}
 
         file_content = await file.read()
         file_content = file_content.decode("utf-8")
         file_content = file_content.split("\n")
-
-        # file_content = json.loads(file_content)
 
         for x in file_content:
             length = len(file_content)
