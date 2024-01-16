@@ -2,7 +2,6 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, UploadFile
 
 from helpers import get_driver, get_bearer_token
-from models.items import Item, Comment, Coupon, Transaction
 
 admin = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 driver = get_driver()
