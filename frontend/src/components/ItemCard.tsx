@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { convertPrice } from "@/app/helpers/currency";
 
 import StarRating from "./StarRating";
 interface Item {
@@ -37,8 +38,18 @@ export default function ItemCard({ item }: { item: Item }) {
                     <h2 className="mt-2 mb-2  font-bold">{item.name}</h2>
                     <p className="text-sm h-16">{item.description}</p>
                     <div className="mt-3 flex items-center">
-                        <span className="text-sm font-semibold">$</span>
-                        <span className="font-bold text-xl">{item.price}</span>
+                        <span className="font-bold text-xl">
+                            {new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency:
+                                    localStorage.getItem("currency") || "EUR",
+                            }).format(
+                                convertPrice(
+                                    item.price,
+                                    localStorage.getItem("currency") || "EUR"
+                                )
+                            )}
+                        </span>
                         &nbsp;
                     </div>
                 </div>

@@ -8,6 +8,7 @@ import CardSelector from "@/components/CardSelector";
 import constants from "@/../config.json";
 import Image from "next/image";
 import TextField from "@mui/material/TextField";
+import { convertPrice } from "@/app/helpers/currency";
 
 export default function PurchaseGame() {
     const router = useRouter();
@@ -94,7 +95,16 @@ export default function PurchaseGame() {
                     Purchase {item.name}
                 </h1>
                 <div className="text-center mb-4 text-lg">
-                    Price: ${item.price?.toFixed(2)}
+                    Price:{" "}
+                    {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: localStorage.getItem("currency") || "EUR",
+                    }).format(
+                        convertPrice(
+                            item.price,
+                            localStorage.getItem("currency") || "EUR"
+                        )
+                    )}
                 </div>
 
                 <form onSubmit={formik.handleSubmit} className="justify-center">

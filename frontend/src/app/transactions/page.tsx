@@ -95,7 +95,7 @@ export default function Transactions() {
 
                             <div className="flex flex-grow flex-row items-center justify-between mx-12">
                                 <div className="text-2xl font-bold">
-                                    ${transaction.price.toFixed(2)}
+                                    {transaction.price.toFixed(2)}
                                 </div>
                                 <div className="text-lg">
                                     {transaction.type}

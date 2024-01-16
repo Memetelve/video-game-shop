@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import MailIcon from "@mui/icons-material/Mail";
 import Notifications from "./Notifications";
+import CurrencyChanger from "./CurrencyChanger";
 
 import {
     Dropdown,
@@ -76,6 +77,7 @@ export default function Navbar() {
                             </Link>
                         </div>
                         <div className="ml-auto">
+                            <CurrencyChanger />
                             <Notifications />
                             <Dropdown>
                                 <DropdownTrigger>

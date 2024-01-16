@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import constants from "../../config.json";
 import Image from "next/image";
 import Link from "next/link";
+import { convertPrice } from "@/app/helpers/currency";
 
 export default function ItemDisplay({ itemId }: { itemId: number }) {
     const [item, setItem] = useState({
@@ -42,7 +43,15 @@ export default function ItemDisplay({ itemId }: { itemId: number }) {
             <div className="w-full md:w-1/2 lg:w-2/3 px-4">
                 <h1 className="text-3xl font-bold mb-2">{item.name}</h1>
                 <p className="text-xl font-semibold mb-2">
-                    ${item.price?.toFixed(2)}
+                    {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: localStorage.getItem("currency") || "EUR",
+                    }).format(
+                        convertPrice(
+                            item.price,
+                            localStorage.getItem("currency") || "EUR"
+                        )
+                    )}
                 </p>
                 <p className="text-slate-200 mb-4">{item.description}</p>
                 <div className="flex items-center">
