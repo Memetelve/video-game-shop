@@ -45,7 +45,7 @@ export default function CardForm() {
 
     return (
         <div className="text-white text-center">
-            <h1 className="text-2xl font-bold">Card Form</h1>
+            <h1 className="text-2xl font-bold">Add a card</h1>
             <form
                 className="flex flex-col items-center"
                 onSubmit={formik.handleSubmit}

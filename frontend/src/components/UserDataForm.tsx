@@ -57,7 +57,7 @@ export default function UserDataForm() {
 
     return (
         <div className="text-white text-center">
-            <h1 className="text-2xl font-bold">User Data Form</h1>
+            <h1 className="text-2xl font-bold">Change your data</h1>
             <form onSubmit={formik.handleSubmit}>
                 <input
                     className="text-black"
