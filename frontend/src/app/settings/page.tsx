@@ -5,8 +5,13 @@ import UserData from "@/components/UserData";
 import UserCards from "@/components/UserCards";
 import UserDataForm from "@/components/UserDataForm";
 import CardForm from "@/components/CardForm";
+import { useAppContext } from "@/components/Context";
+import DataImport from "@/components/DataImport";
+import ItemForm from "@/components/ItemForm";
 
 export default function SettingsPage() {
+    const context = useAppContext();
+
     return (
         <>
             <div className="grid h-screen bg-neutral-900">
@@ -24,6 +29,18 @@ export default function SettingsPage() {
                             <CardForm />
                         </div>
                     </div>
+                    {context.user.role === "admin" ? (
+                        <div className="flex flex-row">
+                            <div className="flex flex-col flex-1">
+                                <DataImport />
+                            </div>
+                            <div className="flex flex-col flex-1">
+                                <ItemForm />
+                            </div>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                 </div>
             </div>
         </>
