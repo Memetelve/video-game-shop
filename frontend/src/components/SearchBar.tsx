@@ -38,16 +38,18 @@ export default function SearchBar({ setItems }: { setItems: any }) {
                 );
             }
 
-            fetch(
-                `${constants.API_DOMAIN}/api/v1/items/search/${values.search}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(body),
-                }
-            )
+            let search = "";
+            if (values.search !== "") {
+                search = `?item_query=${values.search}`;
+            }
+
+            fetch(`${constants.API_DOMAIN}/api/v1/items/search${search}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+            })
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data.items);
