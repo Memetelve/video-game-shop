@@ -77,8 +77,8 @@ async def get_item(item_id: int):
         }
 
 
-@items.post("/search/{item_query}")
-async def search_items(item_query: str, filters: GameTagFilter = None):
+@items.post("/search")
+async def search_items(item_query: str = "", filters: GameTagFilter = None):
     cypher_query = "MATCH (i:Item) WHERE i.name CONTAINS $item_query OPTIONAL MATCH (i)-[:CATEGORIZED_AS]->(t) OPTIONAL MATCH (u)-[c:COMMENTED_ABOUT]->(i) RETURN i, COLLECT(t) as tags, count(c) as reviews, avg(c.stars) as average_rating"
     async with driver.session() as session:
         result = await session.run(cypher_query, item_query=item_query)
