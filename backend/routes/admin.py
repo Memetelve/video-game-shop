@@ -60,14 +60,14 @@ async def post_database_file(
         file_content = file_content.decode("utf-8")
         file_content = file_content.split("\n")
 
-        for x in file_content:
+        for i, x in enumerate(file_content):
             length = len(file_content)
-            print(f"{x} of {length}")
+            print(f"{i} of {length - 1}")
             cypher_query = """
-    WITH apoc.util.compress($data, {compression: 'DEFLATE'}) AS jsonCompressed
-    CALL apoc.import.json(jsonCompressed, {compression: 'DEFLATE'})
-    YIELD source, format, nodes, relationships, properties
-    RETURN source, format, nodes, relationships, properties
+WITH apoc.util.compress($data, {compression: 'DEFLATE'}) AS jsonCompressed
+CALL apoc.import.json(jsonCompressed, {compression: 'DEFLATE'})
+YIELD source, format, nodes, relationships, properties
+RETURN source, format, nodes, relationships, properties
             """
 
             x = (
@@ -82,7 +82,8 @@ async def post_database_file(
                 data=x,
             )
 
-            # return
+            x = await result.values()
+            print(x)
 
         return {"detail": "Great success"}
 

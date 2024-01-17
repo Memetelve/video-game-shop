@@ -21,7 +21,7 @@ export default function SearchBar({ setItems }: { setItems: any }) {
             const body: any = {};
 
             if (values.category !== "all") {
-                body["tags"] = values.category;
+                body["tags"] = [values.category];
             }
 
             if (values.min_price !== "") {
@@ -42,6 +42,9 @@ export default function SearchBar({ setItems }: { setItems: any }) {
             if (values.search !== "") {
                 search = `?item_query=${values.search}`;
             }
+
+            console.log(body);
+            console.log(`${constants.API_DOMAIN}/api/v1/items/search${search}`);
 
             fetch(`${constants.API_DOMAIN}/api/v1/items/search${search}`, {
                 method: "POST",
