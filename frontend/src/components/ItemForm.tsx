@@ -21,23 +21,28 @@ export default function ItemForm() {
         validationSchema: validationSchema,
         onSubmit: (values) => {
             const body = {
-                item: {
-                    name: values.name,
-                    description: values.description,
-                    price: values.price,
-                    image_url: values.image,
-                },
+                name: values.name,
+                description: values.description,
+                price: values.price,
+                image_url: values.image,
             };
+
+            console.log(body);
+
             fetch(`${constants.API_DOMAIN}/api/v1/admin/items/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem(
+                        "sessionToken"
+                    )}`,
                 },
                 body: JSON.stringify(body),
             })
                 .then((res) => res.json())
                 .then((res) => {
                     console.log(res);
+                    formik.resetForm();
                 });
         },
     });
@@ -46,6 +51,7 @@ export default function ItemForm() {
         <form onSubmit={formik.handleSubmit}>
             <label htmlFor="name">Name</label>
             <input
+                className="mb-3 ml-2 rounded-md"
                 id="name"
                 name="name"
                 type="text"
@@ -53,11 +59,14 @@ export default function ItemForm() {
                 onBlur={formik.handleBlur}
                 value={formik.values.name}
             />
+
             {formik.touched.name && formik.errors.name ? (
-                <div>{formik.errors.name}</div>
+                <>{formik.errors.name}</>
             ) : null}
+            <br />
             <label htmlFor="description">Description</label>
             <input
+                className="mb-3 ml-2 rounded-md"
                 id="description"
                 name="description"
                 type="text"
@@ -66,10 +75,12 @@ export default function ItemForm() {
                 value={formik.values.description}
             />
             {formik.touched.description && formik.errors.description ? (
-                <div>{formik.errors.description}</div>
+                <>{formik.errors.description}</>
             ) : null}
+            <br />
             <label htmlFor="price">Price</label>
             <input
+                className="mb-3 ml-2 rounded-md"
                 id="price"
                 name="price"
                 type="number"
@@ -78,10 +89,12 @@ export default function ItemForm() {
                 value={formik.values.price}
             />
             {formik.touched.price && formik.errors.price ? (
-                <div>{formik.errors.price}</div>
+                <>{formik.errors.price}</>
             ) : null}
+            <br />
             <label htmlFor="image">Image</label>
             <input
+                className="mb-3 ml-2 rounded-md"
                 id="image"
                 name="image"
                 type="text"
@@ -90,9 +103,15 @@ export default function ItemForm() {
                 value={formik.values.image}
             />
             {formik.touched.image && formik.errors.image ? (
-                <div>{formik.errors.image}</div>
+                <>{formik.errors.image}</>
             ) : null}
-            <button type="submit">Submit</button>
+            <br />
+            <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                type="submit"
+            >
+                Submit
+            </button>
         </form>
     );
 }

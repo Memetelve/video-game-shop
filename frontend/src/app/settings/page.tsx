@@ -8,6 +8,7 @@ import CardForm from "@/components/CardForm";
 import { useAppContext } from "@/components/Context";
 import DataImport from "@/components/DataImport";
 import ItemForm from "@/components/ItemForm";
+import DataExport from "@/components/DataExport";
 
 export default function SettingsPage() {
     const context = useAppContext();
@@ -30,11 +31,12 @@ export default function SettingsPage() {
                         </div>
                     </div>
                     {context.user.role === "admin" ? (
-                        <div className="flex flex-row">
-                            <div className="flex flex-col flex-1">
+                        <div className="flex flex-row mt-12">
+                            <div className="flex-1 justify-around">
                                 <DataImport />
+                                <DataExport />
                             </div>
-                            <div className="flex flex-col flex-1">
+                            <div className="flex-1 justify-around">
                                 <ItemForm />
                             </div>
                         </div>

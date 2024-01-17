@@ -132,6 +132,7 @@ export function LoginForm() {
                 value={formik.values.password}
                 className={inputClasses}
             />
+            <br />
             {formik.touched.password && formik.errors.password ? (
                 <div className={errorClasses}>{formik.errors.password}</div>
             ) : (
