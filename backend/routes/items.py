@@ -77,7 +77,7 @@ async def get_item(item_id: int):
         }
 
 
-@items.get("/search/{item_query}")
+@items.post("/search/{item_query}")
 async def search_items(item_query: str, filters: GameTagFilter = None):
     cypher_query = "MATCH (i:Item) WHERE i.name CONTAINS $item_query OPTIONAL MATCH (i)-[:CATEGORIZED_AS]->(t) RETURN i, COLLECT(t) as tags"
     async with driver.session() as session:
