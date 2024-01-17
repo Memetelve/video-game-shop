@@ -1,10 +1,18 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends, UploadFile
+from pydantic import BaseModel
 
 from helpers import get_driver, get_bearer_token
 
 admin = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 driver = get_driver()
+
+
+class NewItem(BaseModel):
+    name: str
+    description: str
+    price: float
+    image_url: str
 
 
 @admin.get("/database-file")
@@ -81,10 +89,7 @@ async def post_database_file(
 
 @admin.post("/items/add")
 async def post_item(
-    name: str,
-    description: str,
-    price: float,
-    image_url: str,
+    item: NewItem,
     token: str = Depends(get_bearer_token),
 ):
     cypher_query = f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' AND u.role = 'admin' RETURN u"
@@ -103,10 +108,10 @@ CREATE (i:Item {name: $name, description: $description, price: $price, image: $i
 
         await session.run(
             cypher_query,
-            name=name,
-            description=description,
-            price=price,
-            image_url=image_url,
+            name=item.name,
+            description=item.description,
+            price=item.price,
+            image_url=item.image_url,
         )
 
         return {"detail": "Great success"}
