@@ -138,7 +138,7 @@ async def get_user(token: str = Depends(get_bearer_token)):
             "username": user["username"],
             "email": user["email"],
             "id": user["id"],
-            "role": "user",
+            "role": user["role"],
         }
 
 
