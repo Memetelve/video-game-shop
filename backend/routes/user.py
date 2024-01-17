@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from models.users import PaymentCard, UserUpdate
 
-from helpers import get_driver, get_bearer_token
+from helpers import get_driver, get_bearer_token, is_user_authenticated
 
 user = APIRouter(prefix="/api/v1/user", tags=["user"])
 driver = get_driver()
@@ -42,15 +42,9 @@ async def get_user(user_id: str):
 
 @user.post("/add-card")
 async def add_card(card: PaymentCard, token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = """
 MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token
@@ -72,15 +66,9 @@ RETURN u, c
 
 @user.delete("/delete-card")
 async def delete_card(card: PaymentCard, token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = """
 MATCH (t:Token)<-[:USES_TOKEN]-(u:User)-[r:HAS_CARD]->(c:Card) WHERE t.token = $token AND c.card_number = $card_number
@@ -98,15 +86,9 @@ DELETE r
 
 @user.get("/get-cards")
 async def get_cards(token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query, token=token)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = """
 MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[:HAS_CARD]->(c:Card) WHERE t.token = $token
@@ -128,15 +110,9 @@ RETURN c
 
 @user.patch("/update")
 async def update_user(user: UserUpdate, token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query, token=token)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         set_statement = create_update_user_query(user.model_dump())
 
@@ -152,15 +128,9 @@ async def update_user(user: UserUpdate, token: str = Depends(get_bearer_token)):
 
 @user.get("/transactions")
 async def get_transactions(token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query, token=token)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[r:BOUGHT]->(i:Item) WHERE t.token = $token RETURN r, i"
 
@@ -205,15 +175,9 @@ async def get_transactions(token: str = Depends(get_bearer_token)):
 
 @user.get("/notifications")
 async def get_notifications(token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query, token=token)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token), (u)-[r:BOUGHT]->(i:Item) WHERE t.token = $token RETURN r, i"
 

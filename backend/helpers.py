@@ -144,3 +144,13 @@ def get_bearer_token(
     authorization: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ):
     return authorization.credentials
+
+
+async def is_user_authenticated(token, session):
+    result = await session.run(
+        "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token RETURN u",
+        token=token,
+    )
+
+    user = await result.data()
+    return len(user) > 0

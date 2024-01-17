@@ -50,11 +50,10 @@ async def post_database_file(
     async with driver.session() as session:
         result = await session.run(cypher_query)
         result = await result.values()
-
-        await session.run("MATCH (n) DETACH DELETE n")
-
         if result == []:
             return {"detail": "You are not admin"}
+
+        await session.run("MATCH (n) DETACH DELETE n")
 
         file_content = await file.read()
         file_content = file_content.decode("utf-8")

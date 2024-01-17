@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from models.users import PaymentCard
 from models.items import Item, Comment, Coupon, Transaction
@@ -9,6 +9,7 @@ from helpers import (
     is_accepted_by_filter,
     get_bearer_token,
     create_transaction_id,
+    is_user_authenticated,
 )
 
 items = APIRouter(prefix="/api/v1/items", tags=["items"])
@@ -115,17 +116,9 @@ async def search_items(item_query: str = "", filters: GameTagFilter = None):
 
 @items.post("/add-favorite")
 async def add_favorite(item: Item, token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        print(item.id)
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $id CREATE (u)-[:FAVORITE]->(i)"
 
@@ -136,15 +129,9 @@ async def add_favorite(item: Item, token: str = Depends(get_bearer_token)):
 
 @items.delete("/delete-favorite")
 async def delete_favorite(item: Item, token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:FAVORITE]->(i:Item) WHERE i.id = $item_id DELETE r"
 
@@ -155,15 +142,9 @@ async def delete_favorite(item: Item, token: str = Depends(get_bearer_token)):
 
 @items.get("/favorites")
 async def get_favorites(token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[:FAVORITE]->(i:Item) RETURN i"
 
@@ -190,15 +171,9 @@ async def get_favorites(token: str = Depends(get_bearer_token)):
 async def add_comment(
     item: Item, comment: Comment, token: str = Depends(get_bearer_token)
 ):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (i:Item) WHERE i.id = $id CREATE (u)-[c:COMMENTED_ABOUT {text: $text, stars: $stars, datetime: $datetime}]->(i)"
 
@@ -244,15 +219,9 @@ async def add_purchase(
     coupon: Coupon = None,
     token: str = Depends(get_bearer_token),
 ):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         # check if game bought already
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:BOUGHT {returned: false}]->(i:Item) WHERE i.id = $item_id RETURN r"
@@ -306,15 +275,9 @@ async def add_purchase(
 
 @items.get("/owned")
 async def get_owned_items(token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:BOUGHT {returned: False}]->(i:Item) RETURN i, r"
 
@@ -339,19 +302,13 @@ async def get_owned_items(token: str = Depends(get_bearer_token)):
 
 @items.post("/refund")
 async def refund_item(transaction: Transaction, token: str = Depends(get_bearer_token)):
-    cypher_query = (
-        f"MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = '{token}' RETURN u"
-    )
     async with driver.session() as session:
-        result = await session.run(cypher_query)
-        result = await result.values()
-
-        if result == []:
-            return {"msg": "User does not exist"}
+        if not await is_user_authenticated(token, session):
+            return HTTPException(status_code=401, detail="Sesstion token not correct")
 
         cypher_query = "MATCH (u:User)-[:USES_TOKEN]->(t:Token) WHERE t.token = $token MATCH (u)-[r:BOUGHT {transaction_id: $transaction_id}]->(i:Item) SET r.returned = True, r.return_datetime = $datetime"
 
-        result = await session.run(
+        await session.run(
             cypher_query,
             token=token,
             transaction_id=transaction.transaction_id,
